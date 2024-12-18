@@ -35,3 +35,9 @@ CREATE TABLE Banhang (
     DonGia DECIMAL(10,2) NOT NULL,               
     ThanhTien AS (SoLuong * DonGia)             
 );
+CREATE TABLE DoanhThu (
+    DoanhThuID INT PRIMARY KEY,
+    HoaDonID INT,
+    TongTien DECIMAL(18, 2),
+    NgayThu DATE
+);
