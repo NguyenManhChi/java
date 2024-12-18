@@ -15,6 +15,7 @@ public class FrmDoanhThu extends javax.swing.JFrame {
      */
     public FrmDoanhThu() {
         initComponents();
+        //
     }
 
     /**

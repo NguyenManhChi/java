@@ -29,6 +29,7 @@ public class FrmDangky extends javax.swing.JFrame {
         conn = new DbConnection().getConnection();
         account = new AccountController(conn);
         lbCaptcha.setText(generateRandomCode());
+        //
     }
 
     public String generateRandomCode() {

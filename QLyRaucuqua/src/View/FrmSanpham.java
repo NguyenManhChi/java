@@ -440,6 +440,7 @@ public class FrmSanpham extends javax.swing.JFrame {
             txttensp.setText(jTable1.getValueAt(rowIndex, 1).toString());
             txtGia.setText(jTable1.getValueAt(rowIndex, 2).toString());
             txtSl.setText(jTable1.getValueAt(rowIndex, 3).toString());
+            //
         }
         jTable1.setDefaultEditor(Object.class, null);
     }//GEN-LAST:event_jTable1MouseClicked

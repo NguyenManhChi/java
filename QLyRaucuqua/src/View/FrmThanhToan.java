@@ -15,6 +15,7 @@ public class FrmThanhToan extends javax.swing.JFrame {
      */
     public FrmThanhToan() {
         initComponents();
+        //
     }
 
     /**

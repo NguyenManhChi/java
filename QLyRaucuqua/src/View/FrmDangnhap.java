@@ -141,6 +141,7 @@ public class FrmDangnhap extends javax.swing.JFrame {
         this.dispose();
         FrmDangky frm = new FrmDangky();
         frm.setVisible(true);
+        //
     }//GEN-LAST:event_btnDangkyMouseClicked
 
     private void btnDangnhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangnhapActionPerformed

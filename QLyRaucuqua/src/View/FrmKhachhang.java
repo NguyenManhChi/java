@@ -469,6 +469,7 @@ public class FrmKhachhang extends javax.swing.JFrame {
             updatedKhachhang.setTenKH(ten);
             updatedKhachhang.setDiaChi(dc);
             updatedKhachhang.setSoDienThoai(sdt);
+            //
 
             boolean success;
             if (khachhang.isKhachHangExists(id)) {
