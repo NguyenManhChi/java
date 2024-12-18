@@ -41,3 +41,6 @@ CREATE TABLE DoanhThu (
 	TongTien DECIMAL(18,2), 
 	NgayThu DATE 
 );
+
+ALTER TABLE sanpham
+ADD  giaSP FLOAT;

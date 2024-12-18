@@ -23,6 +23,11 @@ public class modelKhachhang {
         this.soDienThoai = soDienThoai;
         this.diaChi = diaChi;
     }
+    public modelKhachhang( String tenKH, String soDienThoai, String diaChi) {
+        this.tenKH = tenKH;
+        this.soDienThoai = soDienThoai;
+        this.diaChi = diaChi;
+    }
     public int getKhachHangID() { return khachHangID; }
     public void setKhachHangID(int khachHangID) { this.khachHangID = khachHangID; }
 

@@ -3,12 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Code%20Lung%20Tung/Java/QLyRaucuqua/src/View/FrmDangnhap.java</file>
-            <file>file:/D:/Code%20Lung%20Tung/Java/QLyRaucuqua/src/Model/modelAccount.java</file>
-            <file>file:/D:/Code%20Lung%20Tung/Java/QLyRaucuqua/src/View/FrmBanhang.java</file>
-            <file>file:/D:/Code%20Lung%20Tung/Java/QLyRaucuqua/src/View/FrmDangky.java</file>
-            <file>file:/D:/Code%20Lung%20Tung/Java/QLyRaucuqua/src/Controller/AccountController.java</file>
-            <file>file:/D:/Code%20Lung%20Tung/Java/QLyRaucuqua/src/DBO/DbConnection.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/View/FrmDangnhap.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/View/FrmBanhang.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/View/FrmSanpham.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/View/FrmKhachhang.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/View/FrmDangky.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/Controller/KhachHangController.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/Model/modelKhachhang.java</file>
+            <file>file:/C:/Users/DELL/Downloads/java/QLyRaucuqua/src/Controller/SanPhamController.java</file>
         </group>
     </open-files>
 </project-private>

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KhachHangController {
+
     private Connection conn;
 
     public KhachHangController(Connection conn) {
@@ -21,21 +22,26 @@ public class KhachHangController {
     }
 
     // Lấy danh sách tất cả khách hàng
-    public List<modelKhachhang> getAllKhachHang() throws SQLException {
+    public List<modelKhachhang> getAllKhachHang() {
         List<modelKhachhang> list = new ArrayList<>();
-        String sql = "SELECT * FROM KhachHang";
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
+        try {
+            String sql = "SELECT * FROM KhachHang";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
-        while (rs.next()) {
-            modelKhachhang kh = new modelKhachhang(
-                rs.getInt("KhachHangID"),
-                rs.getString("TenKH"),
-                rs.getString("SoDienThoai"),
-                rs.getString("DiaChi")
-            );
-            list.add(kh);
+            while (rs.next()) {
+                modelKhachhang kh = new modelKhachhang(
+                        rs.getInt("KhachHangID"),
+                        rs.getString("TenKH"),
+                        rs.getString("SoDienThoai"),
+                        rs.getString("DiaChi")
+                );
+                list.add(kh);
+            }
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
         }
+
         return list;
     }
 
@@ -79,7 +85,20 @@ public class KhachHangController {
             return false;
         }
     }
-
+    // getID
+    public int getKhachHangID(String tenKH) {
+        String sql = "SELECT KhachHangID FROM KhachHang WHERE TenKH = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, tenKH);  // Thay 'tenKH' bằng tên khách hàng cần tìm
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("KhachHangID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;  // Nếu không tìm thấy, trả về 0
+    }
     // Tìm kiếm khách hàng theo tên hoặc số điện thoại
     public List<modelKhachhang> searchKhachHang(String keyword) {
         List<modelKhachhang> list = new ArrayList<>();
@@ -91,10 +110,10 @@ public class KhachHangController {
 
             while (rs.next()) {
                 modelKhachhang kh = new modelKhachhang(
-                    rs.getInt("KhachHangID"),
-                    rs.getString("TenKH"),
-                    rs.getString("SoDienThoai"),
-                    rs.getString("DiaChi")
+                        rs.getInt("KhachHangID"),
+                        rs.getString("TenKH"),
+                        rs.getString("SoDienThoai"),
+                        rs.getString("DiaChi")
                 );
                 list.add(kh);
             }
@@ -103,5 +122,20 @@ public class KhachHangController {
         }
         return list;
     }
-}
 
+    public boolean isKhachHangExists(int id) {
+        String sql = "SELECT COUNT(*) FROM KhachHang WHERE KhachHangID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id); // Thay thế tham số ? bằng KhachHangID
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Trả về true nếu số lượng > 0, nghĩa là khách hàng tồn tại
+            }
+        } catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        return false;  // Nếu không có khách hàng với id này
+    }
+
+}

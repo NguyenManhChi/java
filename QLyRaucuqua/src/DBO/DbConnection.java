@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class DbConnection {
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=QuanLyRauCuQua;encrypt=false;trustServerCertificate=true;";
     private static final String USER = "sa";       // Tên đăng nhập SQL Server
-    private static final String PASSWORD = "12345"; // Mật khẩu SQL Server
+    private static final String PASSWORD = "12345678"; // Mật khẩu SQL Server
 
     // Phương thức để tạo kết nối
     public Connection getConnection() {

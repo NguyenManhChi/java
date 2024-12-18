@@ -10,7 +10,8 @@ import java.util.List;
 public class AccountController {
 
     private Connection conn;
-
+    private modelAccount model;
+    
     public AccountController(Connection conn) {
         this.conn = conn;
     }
@@ -141,5 +142,4 @@ public class AccountController {
         }
         return false;
     }
-
 }
