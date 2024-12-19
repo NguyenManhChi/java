@@ -135,6 +135,11 @@ public class FrmKhachhang extends javax.swing.JFrame {
         });
 
         btnDangxuat.setText("Đăng xuất");
+        btnDangxuat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDangxuatActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -538,6 +543,19 @@ public class FrmKhachhang extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void btnDangxuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangxuatActionPerformed
+        // TODO add your handling code here:
+         int confirmed = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (confirmed == JOptionPane.YES_OPTION) {
+            FrmDangnhap frm = new FrmDangnhap();
+            frm.setVisible(true);
+            this.dispose();
+        }
+
+    }//GEN-LAST:event_btnDangxuatActionPerformed
 
     /**
      * @param args the command line arguments
