@@ -4,7 +4,17 @@
  */
 package View;
 
+import Controller.AccountController;
+import Controller.BanHangcontroller;
+import Controller.KhachHangController;
+import Controller.SanPhamController;
+import DBO.DbConnection;
+
 import javax.swing.JOptionPane;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -15,8 +25,70 @@ public class FrmBanhang extends javax.swing.JFrame {
     /**
      * Creates new form FrmBanhang
      */
-    public FrmBanhang() {
+    private Connection conn;
+    private int selectedKhachHangID;
+    private int selectedSanPhamID;
+    private SanPhamController sanpham;
+    private KhachHangController khachhang;
+    private BanHangcontroller banhang;
+    private static int id;
+ 
+    
+    public FrmBanhang(int _id) {
         initComponents();
+        conn = new DbConnection().getConnection();
+        sanpham = new SanPhamController(conn);
+        khachhang = new KhachHangController(conn);
+        banhang = new BanHangcontroller(conn);
+        this.id = _id;
+        loadSanpham();
+        loadKhachHang();
+
+    }
+
+    private void loadSanpham() {
+        List<Object[]> spList = sanpham.getAllSP();
+        String[] columnNames = {"ID", "Tên sản phẩm", "Giá (VND)"};
+
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+        for (Object[] sp : spList) {
+            model.addRow(sp);
+        }
+
+        jTable1.setModel(model);
+        jTable1.setDefaultEditor(Object.class, null);
+    }
+
+    private void loadKhachHang() {
+        List<Object[]> spList = khachhang.getAllKH();
+        String[] columnNames = {"ID", "Tên khách hàng", "SĐT", "Địa chỉ"};
+
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        for (Object[] sp : spList) {
+            model.addRow(sp);
+        }
+
+        jTable2.setModel(model);
+        jTable2.setDefaultEditor(Object.class, null);
+    }
+
+    private void loadSanPhamByKhachHang(int khachHangID) {
+        List<Object[]> sanPhamList = banhang.getAllSPcuaKhachHang(khachHangID);
+
+        // Tạo một DefaultTableModel để cập nhật dữ liệu cho jTable3
+        String[] columnNames = {"Tên Sản Phẩm", "Số Lượng", "Đơn Giá", "Thành Tiền"};
+        
+        DefaultTableModel model = (DefaultTableModel) jTable4.getModel();
+        jTable4.setDefaultEditor(Object.class, null);
+        model.setRowCount(0); 
+        if (model.getRowCount() == 0) {
+            model.setColumnIdentifiers(columnNames);  // Đảm bảo header của bảng được thiết lập
+        }
+        // Thêm dữ liệu mới vào jTable3
+        for (Object[] sp : sanPhamList) {
+            model.addRow(sp);
+        }
     }
 
     /**
@@ -40,8 +112,8 @@ public class FrmBanhang extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        btnThem = new javax.swing.JButton();
+        btnXoa = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
@@ -146,11 +218,26 @@ public class FrmBanhang extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
-        jButton5.setText("Thêm");
+        btnThem.setText("Thêm");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemActionPerformed(evt);
+            }
+        });
 
-        jButton6.setText("Xóa");
+        btnXoa.setText("Xóa");
+        btnXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaActionPerformed(evt);
+            }
+        });
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -163,6 +250,11 @@ public class FrmBanhang extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable2MouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable2);
 
         jLabel4.setText("Thông Tin Khách Hàng");
@@ -183,6 +275,11 @@ public class FrmBanhang extends javax.swing.JFrame {
         jScrollPane4.setViewportView(jTable4);
 
         jButton7.setText("Thanh Toán");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -192,24 +289,14 @@ public class FrmBanhang extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton7)
-                        .addGap(251, 251, 251))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton5)
-                                    .addComponent(jButton6)))
+                                    .addComponent(btnThem)
+                                    .addComponent(btnXoa)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(117, 117, 117)
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -218,7 +305,15 @@ public class FrmBanhang extends javax.swing.JFrame {
                                 .addComponent(jLabel3)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel4)
-                        .addGap(59, 59, 59))))
+                        .addGap(59, 59, 59))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton7)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -239,9 +334,9 @@ public class FrmBanhang extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(52, 52, 52)
-                                .addComponent(jButton5)
+                                .addComponent(btnThem)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton6)
+                                .addComponent(btnXoa)
                                 .addGap(148, 148, 148)
                                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -250,8 +345,8 @@ public class FrmBanhang extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton5.getAccessibleContext().setAccessibleName("btnthem");
-        jButton6.getAccessibleContext().setAccessibleName("btnxoa");
+        btnThem.getAccessibleContext().setAccessibleName("btnthem");
+        btnXoa.getAccessibleContext().setAccessibleName("btnxoa");
         jButton7.getAccessibleContext().setAccessibleName("btnthanhtoan");
 
         pack();
@@ -260,7 +355,7 @@ public class FrmBanhang extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmSanpham frm = new FrmSanpham();
+        FrmSanpham frm = new FrmSanpham(id);
         frm.setVisible(true);
         //
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -268,19 +363,19 @@ public class FrmBanhang extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmKhachhang frm = new FrmKhachhang();
+        FrmKhachhang frm = new FrmKhachhang(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmDoanhThu frm=new FrmDoanhThu();
+        FrmDoanhThu frm = new FrmDoanhThu(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -291,12 +386,143 @@ public class FrmBanhang extends javax.swing.JFrame {
                 "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (confirmed == JOptionPane.YES_OPTION) {
-            FrmDangnhap frm = new FrmDangnhap();
+            FrmDangnhap frm = new FrmDangnhap(id);
             frm.setVisible(true);
             this.dispose();
         }
 
     }//GEN-LAST:event_btnDangxuatActionPerformed
+
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+        int row = jTable2.getSelectedRow();
+
+        if (row >= 0) {
+            // Giả sử cột chứa ID sản phẩm là cột thứ nhất (index 0)
+            int khachhangId = Integer.parseInt(jTable2.getValueAt(row, 0).toString());  // Thay đổi 0 thành cột chứa ID nếu cần
+            
+            // In ra ID của sản phẩm
+            System.out.println("ID Khách hàng: " + khachhangId);
+            selectedKhachHangID = khachhangId;
+            // Bạn có thể thực hiện các hành động khác với ID sản phẩm
+            // Ví dụ, lưu ID để sử dụng trong các chức năng khác
+        }
+        loadSanPhamByKhachHang(selectedKhachHangID);
+    }//GEN-LAST:event_jTable2MouseClicked
+
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+        // Lấy ID khách hàng từ bảng khách hàng (jTable2)
+        int selectedRowKhachHang = jTable2.getSelectedRow();
+        if (selectedRowKhachHang == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng!");
+            return;
+        }
+        int khachHangID = (int) jTable2.getValueAt(selectedRowKhachHang, 0); // Lấy ID khách hàng
+
+        // Lấy sản phẩm đã chọn từ bảng sản phẩm (jTable1)
+        int selectedRowSanPham = jTable1.getSelectedRow();
+        if (selectedRowSanPham == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm!");
+            return;
+        }
+        String tenSanPham = (String) jTable1.getValueAt(selectedRowSanPham, 1); // Tên sản phẩm
+        float donGia = (float) jTable1.getValueAt(selectedRowSanPham, 2); // Đơn giá sản phẩm
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng của khách hàng chưa
+        boolean isProductExist = false;
+        List<Object[]> sanPhamList = banhang.getAllSPcuaKhachHang(khachHangID); // Lấy tất cả sản phẩm của khách hàng
+        for (Object[] sp : sanPhamList) {
+            String tenSP = (String) sp[0];
+            if (tenSanPham.equals(tenSP)) {
+                // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng lên 1
+                int currentQuantity = (int) sp[1];
+                
+
+                // Cập nhật số lượng và thành tiền
+                banhang.capNhatSoLuongSanPham(khachHangID, tenSanPham, currentQuantity + 1);
+                isProductExist = true;
+                break;
+            }
+        }
+
+        if (!isProductExist) {
+            // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
+            String strSoLuong = JOptionPane.showInputDialog(this, "Nhập số lượng:");
+            if (strSoLuong == null || strSoLuong.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Số lượng không hợp lệ!");
+                return;
+            }
+
+            int soLuong = Integer.parseInt(strSoLuong); // Số lượng cần thêm
+           
+            // Thêm sản phẩm vào giỏ hàng
+            banhang.themSanPhamVaoGiỏ(khachHangID, tenSanPham, soLuong, donGia);
+        }
+
+        // Cập nhật lại bảng giỏ hàng sau khi thêm sản phẩm
+        loadSanPhamByKhachHang(khachHangID);
+
+        JOptionPane.showMessageDialog(this, "Sản phẩm đã được thêm vào giỏ hàng!");
+    }//GEN-LAST:event_btnThemActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        int row = jTable1.getSelectedRow();
+
+        if (row >= 0) {
+            // Giả sử cột chứa ID sản phẩm là cột thứ nhất (index 0)
+            int sanphamid = Integer.parseInt(jTable1.getValueAt(row, 0).toString());   // Thay đổi 0 thành cột chứa ID nếu cần
+
+            // In ra ID của sản phẩm
+            System.out.println("ID sản phẩm: " + sanphamid);
+            selectedSanPhamID = sanphamid;
+            // Bạn có thể thực hiện các hành động khác với ID sản phẩm
+            // Ví dụ, lưu ID để sử dụng trong các chức năng khác
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTable4.getSelectedRow();
+
+        // Kiểm tra nếu không có dòng nào được chọn
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm cần xóa!");
+            return;
+        }
+
+        // Lấy thông tin sản phẩm từ dòng đã chọn
+        String tenSanPham = (String) jTable4.getValueAt(selectedRow, 0);  
+        
+        System.out.print(tenSanPham);
+        // Xác nhận xóa sản phẩm
+        int confirmation = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn xóa sản phẩm " + tenSanPham + " khỏi giỏ hàng?",
+                "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+            // Gọi phương thức để xóa sản phẩm khỏi giỏ hàng trong cơ sở dữ liệu
+            boolean isDeleted = banhang.deleteBanhang(selectedKhachHangID, tenSanPham); 
+             JOptionPane.showMessageDialog(this, "Xóa thành công");
+            
+            // Kiểm tra nếu xóa thành công
+            if (isDeleted) {
+                // Cập nhật lại bảng sau khi xóa
+                 loadSanPhamByKhachHang(selectedKhachHangID);
+            } else {
+                JOptionPane.showMessageDialog(this, "Có lỗi xảy ra khi xóa sản phẩm.");
+            }
+        }
+    }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        int id = selectedKhachHangID;
+        System.out.print(id);
+        FrmThanhToan frm = new FrmThanhToan(id);
+        frm.setVisible(true);
+        
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -328,19 +554,19 @@ public class FrmBanhang extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmBanhang().setVisible(true);
+                new FrmBanhang(id).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDangxuat;
+    private javax.swing.JButton btnThem;
+    private javax.swing.JButton btnXoa;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;

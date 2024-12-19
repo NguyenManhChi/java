@@ -22,11 +22,12 @@ public class FrmDangnhap extends javax.swing.JFrame {
     private AccountController account;
     private DbConnection Dbconn;
     private Connection conn;
-
-    public FrmDangnhap() {
+    private static int id; 
+    public FrmDangnhap(int _id) {
         initComponents();
         conn = new DbConnection().getConnection();
         account = new AccountController(conn);
+        this.id = _id;
     }
 
     /**
@@ -139,7 +140,7 @@ public class FrmDangnhap extends javax.swing.JFrame {
     private void btnDangkyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDangkyMouseClicked
         // TODO add your handling code here:
         this.dispose();
-        FrmDangky frm = new FrmDangky();
+        FrmDangky frm = new FrmDangky(id);
         frm.setVisible(true);
         //
     }//GEN-LAST:event_btnDangkyMouseClicked
@@ -158,7 +159,7 @@ public class FrmDangnhap extends javax.swing.JFrame {
         if (checkAccount) {
             JOptionPane.showMessageDialog(null, "Đăng nhập thành công", "Thông báo", 1);
             this.dispose();
-            FrmBanhang banhang = new FrmBanhang();
+            FrmBanhang banhang = new FrmBanhang(id);
             banhang.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "Tài khoản mật khẩu không chính xác", "Thông báo", 1);
@@ -200,7 +201,7 @@ public class FrmDangnhap extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmDangnhap().setVisible(true);
+                new FrmDangnhap(id).setVisible(true);
             }
         });
     }

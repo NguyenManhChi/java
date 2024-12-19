@@ -44,6 +44,31 @@ public class KhachHangController {
 
         return list;
     }
+    
+    public List<Object[]> getAllKH() {
+        List<Object[]> list = new ArrayList<>();
+        try {
+            String sql = "SELECT KhachHangID, TenKH, SoDienThoai, DiaChi FROM KhachHang";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                // Tạo mảng Object[] để lưu thông tin khách hàng
+                Object[] kh = new Object[]{
+                    rs.getInt("KhachHangID"),
+                    rs.getString("TenKH"),
+                    rs.getString("SoDienThoai"),
+                    rs.getString("DiaChi")
+                };
+                list.add(kh); // Thêm mảng vào danh sách
+            }
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        }
+
+        return list;
+    }
+
 
     // Thêm khách hàng mới
     public boolean addKhachHang(modelKhachhang kh) {
@@ -136,6 +161,20 @@ public class KhachHangController {
             ex.printStackTrace();
         }
         return false;  // Nếu không có khách hàng với id này
+    }
+    //Lấy tên
+    public String getTenKhachHang(int khachHangID) {
+        String sql = "SELECT TenKH FROM KhachHang WHERE KhachHangID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, khachHangID);  // Thay 'khachHangID' bằng ID khách hàng cần tìm
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("TenKH");  // Trả về tên khách hàng
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;  // Nếu không tìm thấy, trả về null
     }
 
 }

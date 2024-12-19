@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Controller;
 
-/**
- *
- * @author leduc
- */
 import Model.modelSanpham;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,6 +9,7 @@ public class SanPhamController {
 
     private Connection conn;
 
+    // Constructor nhận kết nối Database
     public SanPhamController(Connection conn) {
         this.conn = conn;
     }
@@ -25,7 +18,6 @@ public class SanPhamController {
     public List<modelSanpham> getAllSanPham() {
         List<modelSanpham> list = new ArrayList<>();
         try {
-
             String sql = "SELECT * FROM sanpham";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -39,13 +31,35 @@ public class SanPhamController {
                 );
                 list.add(sp);
             }
-            return list;
         } catch (SQLException ex) {
             System.out.print(ex.getMessage());
         }
         return list;
     }
+    
 
+    // Lấy danh sách sản phẩm với chỉ những thông tin cần thiết cho bán hàng (ID, tên, giá)
+    public List<Object[]> getAllSP() {
+        List<Object[]> list = new ArrayList<>();
+        try {
+            String sql = "SELECT sanphamID, tenSP, giaSP FROM sanpham";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Object[] sp = new Object[] {
+                    rs.getInt("sanphamID"),
+                    rs.getString("tenSP"),
+                    rs.getFloat("giaSP")
+                };
+                list.add(sp);
+            }
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
+        }
+        return list;
+    }
+    
     // Thêm sản phẩm mới
     public boolean addSanPham(modelSanpham sp) {
         try {
@@ -54,25 +68,27 @@ public class SanPhamController {
             stmt.setString(1, sp.getTenSP());
             stmt.setInt(2, sp.getSoLuong());
             stmt.setFloat(3, sp.getgiaSP());
-            return stmt.executeUpdate() > 0;
+            return stmt.executeUpdate() > 0; // Trả về true nếu thêm thành công
         } catch (SQLException ex) {
             System.out.print(ex.getMessage());
         }
-        return false;
+        return false; // Nếu có lỗi, trả về false
     }
 
     // Sửa thông tin sản phẩm
-    public boolean updateSanPham(modelSanpham sp) throws SQLException {
+    public boolean updateSanPham(modelSanpham sp) {
         String sql = "UPDATE sanpham SET tenSP = ?, soluong = ?, giaSP = ? WHERE sanphamID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, sp.getTenSP());
             stmt.setInt(2, sp.getSoLuong());
             stmt.setFloat(3, sp.getgiaSP());
             stmt.setInt(4, sp.getSanPhamID());
-            return stmt.executeUpdate() > 0; // Returns true if at least one row is updated
+            return stmt.executeUpdate() > 0; // Trả về true nếu ít nhất 1 hàng được cập nhật
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
         }
+        return false;
     }
-
 
     // Xóa sản phẩm
     public boolean deleteSanPham(int sanphamID) {
@@ -80,7 +96,7 @@ public class SanPhamController {
             String sql = "DELETE FROM sanpham WHERE sanphamID = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, sanphamID);
-            stmt.executeUpdate();
+            return stmt.executeUpdate() > 0; // Trả về true nếu xóa thành công
         } catch (SQLException ex) {
             System.out.print(ex.getMessage());
         }
@@ -88,47 +104,55 @@ public class SanPhamController {
     }
 
     // Tìm kiếm sản phẩm theo tên
-    public List<modelSanpham> searchSanPhamByName(String tenSP) throws SQLException {
+    public List<modelSanpham> searchSanPhamByName(String tenSP) {
         List<modelSanpham> list = new ArrayList<>();
         String sql = "SELECT * FROM sanpham WHERE tenSP LIKE ?";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setString(1, "%" + tenSP + "%");
-        ResultSet rs = stmt.executeQuery();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + tenSP + "%");
+            ResultSet rs = stmt.executeQuery();
 
-        while (rs.next()) {
-            modelSanpham sp = new modelSanpham(
-                    rs.getInt("sanphamID"),
-                    rs.getString("tenSP"),
-                    rs.getInt("soluong"),
-                    rs.getFloat("giaSP")
-            );
-            list.add(sp);
+            while (rs.next()) {
+                modelSanpham sp = new modelSanpham(
+                        rs.getInt("sanphamID"),
+                        rs.getString("tenSP"),
+                        rs.getInt("soluong"),
+                        rs.getFloat("giaSP")
+                );
+                list.add(sp);
+            }
+        } catch (SQLException ex) {
+            System.out.print(ex.getMessage());
         }
         return list;
     }
 
-    public boolean isThucphamExists(int id) throws SQLException {
+    // Kiểm tra xem sản phẩm có tồn tại không
+    public boolean isSanPhamExists(int id) {
         String sql = "SELECT COUNT(*) FROM sanpham WHERE sanphamID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1) > 0; // Returns true if count > 0
-            }
-        }
-        return false;
-    }
-    public int getSanphamID(String tenSP) {
-        String sql = "SELECT sanphamID FROM sanpham WHERE tenSP = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, tenSP);  // Thay 'tenKH' bằng tên khách hàng cần tìm
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("KhachHangID");
+                return rs.getInt(1) > 0; // Nếu có kết quả > 0 thì tồn tại
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;  // Nếu không tìm thấy, trả về 0
+        return false;
+    }
+
+    // Lấy ID của sản phẩm theo tên
+    public int getSanPhamID(String tenSP) {
+        String sql = "SELECT sanphamID FROM sanpham WHERE tenSP = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, tenSP);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("sanphamID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // Nếu không tìm thấy sản phẩm
     }
 }

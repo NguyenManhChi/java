@@ -23,8 +23,9 @@ public class FrmDangky extends javax.swing.JFrame {
     private DbConnection dbCon;
     private AccountController account;
     private Connection conn;
+    private static int id;
 
-    public FrmDangky() {
+    public FrmDangky(int _id) {
         initComponents();
         conn = new DbConnection().getConnection();
         account = new AccountController(conn);
@@ -207,14 +208,14 @@ public class FrmDangky extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Đăng kí thất bại", "Thông báo", JOptionPane.WARNING_MESSAGE);
         }
         this.dispose();
-        FrmDangnhap frm = new FrmDangnhap();
+        FrmDangnhap frm = new FrmDangnhap(id);
         frm.setVisible(true);
     }//GEN-LAST:event_btnDangkyActionPerformed
 
     private void btnHuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHuyActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmDangnhap frm = new FrmDangnhap();
+        FrmDangnhap frm = new FrmDangnhap(id);
         frm.setVisible(true);
     }//GEN-LAST:event_btnHuyActionPerformed
 
@@ -248,7 +249,7 @@ public class FrmDangky extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmDangky().setVisible(true);
+                new FrmDangky(id).setVisible(true);
             }
         });
     }

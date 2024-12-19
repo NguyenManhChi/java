@@ -26,13 +26,15 @@ public class FrmKhachhang extends javax.swing.JFrame {
     private modelKhachhang model;
     private Connection conn;
     private KhachHangController khachhang;
+    private static int id;
   
-    public FrmKhachhang() {
+    public FrmKhachhang(int _id) {
         initComponents();
         
         conn = new DbConnection().getConnection();
         khachhang = new KhachHangController(conn);
         model = new modelKhachhang();
+        this.id = _id;
         lockTxt();
         loadKhachhang();
     }   
@@ -402,7 +404,7 @@ public class FrmKhachhang extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmSanpham ban = new FrmSanpham();
+        FrmSanpham ban = new FrmSanpham(id);
         ban.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -419,14 +421,14 @@ public class FrmKhachhang extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmBanhang ban = new FrmBanhang();
+        FrmBanhang ban = new FrmBanhang(id);
         ban.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmKhachhang ban = new FrmKhachhang();
+        FrmKhachhang ban = new FrmKhachhang(id);
         ban.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -434,7 +436,7 @@ public class FrmKhachhang extends javax.swing.JFrame {
         // TODO add your handling code here:
         // TODO add your handling code here:
         this.dispose();
-        FrmDoanhThu ban = new FrmDoanhThu();
+        FrmDoanhThu ban = new FrmDoanhThu(id);
         ban.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -509,7 +511,6 @@ public class FrmKhachhang extends javax.swing.JFrame {
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
-        // TODO add your handling code here:
         int rowIndex = jTable1.getSelectedRow();
 
         if (rowIndex >= 0) {
@@ -550,7 +551,7 @@ public class FrmKhachhang extends javax.swing.JFrame {
                 "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (confirmed == JOptionPane.YES_OPTION) {
-            FrmDangnhap frm = new FrmDangnhap();
+            FrmDangnhap frm = new FrmDangnhap(id);
             frm.setVisible(true);
             this.dispose();
         }
@@ -587,7 +588,7 @@ public class FrmKhachhang extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmKhachhang().setVisible(true);
+                new FrmKhachhang(id).setVisible(true);
             }
         });
     }

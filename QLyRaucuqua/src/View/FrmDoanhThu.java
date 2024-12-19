@@ -12,12 +12,14 @@ import javax.swing.JOptionPane;
  */
 public class FrmDoanhThu extends javax.swing.JFrame {
 
+    private static int id;
     /**
      * Creates new form FrmDoanhThu
      */
-    public FrmDoanhThu() {
+    public FrmDoanhThu(int _id) {
         initComponents();
         //
+        this.id = _id;
     }
 
     /**
@@ -234,21 +236,21 @@ public class FrmDoanhThu extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmDoanhThu frm=new FrmDoanhThu();
+        FrmDoanhThu frm=new FrmDoanhThu(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmBanhang frm=new FrmBanhang();
+        FrmBanhang frm=new FrmBanhang(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmKhachhang frm=new FrmKhachhang();
+        FrmKhachhang frm=new FrmKhachhang(id);
         frm.setVisible(true);
         
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -259,7 +261,7 @@ public class FrmDoanhThu extends javax.swing.JFrame {
                 "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (confirmed == JOptionPane.YES_OPTION) {
-            FrmDangnhap frm = new FrmDangnhap();
+            FrmDangnhap frm = new FrmDangnhap(id);
             frm.setVisible(true);
             this.dispose();
         }
@@ -296,7 +298,7 @@ public class FrmDoanhThu extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmDoanhThu().setVisible(true);
+                new FrmDoanhThu(id).setVisible(true);
             }
         });
     }

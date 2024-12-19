@@ -25,11 +25,13 @@ public class FrmSanpham extends javax.swing.JFrame {
      */
     private Connection conn;
     private SanPhamController sanpham;
+    private static int id;
 
-    public FrmSanpham() {
+    public FrmSanpham(int _id) {
         initComponents();
         conn = new DbConnection().getConnection();
         sanpham = new SanPhamController(conn);
+        this.id = _id;
         lockTxt();
         loadSanpham();
     }
@@ -401,52 +403,42 @@ public class FrmSanpham extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "ID phải là một số nguyên!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return; // Exit the method
         }
-
+       
         String ten = txttensp.getText().trim();
         if (ten.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Tên sản phẩm không được để trống!", "Lỗi", JOptionPane.WARNING_MESSAGE);
             return; // Exit the method
         }
 
-        try {
-            float gia = Float.parseFloat(txtGia.getText().trim());
-            int sl = Integer.parseInt(txtSl.getText().trim());
-
-            modelSanpham updatedSanpham = new modelSanpham();
-            updatedSanpham.setSanPhamID(id);
-            updatedSanpham.setTenSP(ten);
-            updatedSanpham.setgiaSP(gia);
-            updatedSanpham.setSoLuong(sl);
-
-            boolean success;
-            if (sanpham.isThucphamExists(id)) {
-                // Update the product
-                success = sanpham.updateSanPham(updatedSanpham);
-
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Có lỗi xảy ra khi cập nhật sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                // Add new product
-                success = sanpham.addSanPham(updatedSanpham);
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Có lỗi xảy ra khi thêm sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
+        float gia = Float.parseFloat(txtGia.getText().trim());
+        int sl = Integer.parseInt(txtSl.getText().trim());
+        modelSanpham updatedSanpham = new modelSanpham();
+        updatedSanpham.setSanPhamID(id);
+        updatedSanpham.setTenSP(ten);
+        updatedSanpham.setgiaSP(gia);
+        updatedSanpham.setSoLuong(sl);
+        boolean success;
+        if (sanpham.isSanPhamExists(id)) {
+            // Update the product
+            success = sanpham.updateSanPham(updatedSanpham);
+            
             if (success) {
-                loadSanpham(); // Refresh the table
-                lockTxt(); // Lock or clear input fields
+                JOptionPane.showMessageDialog(this, "Cập nhật sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Có lỗi xảy ra khi cập nhật sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập giá trị hợp lệ cho giá và số lượng!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-        } catch (SQLException ex) {
-            Logger.getLogger(FrmSanpham.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            // Add new product
+            success = sanpham.addSanPham(updatedSanpham);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Có lỗi xảy ra khi thêm sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        if (success) {
+            loadSanpham(); // Refresh the table
+            lockTxt(); // Lock or clear input fields
         }
 
     }//GEN-LAST:event_btnluuActionPerformed
@@ -478,31 +470,24 @@ public class FrmSanpham extends javax.swing.JFrame {
     private void btnTimkiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimkiemActionPerformed
         // TODO add your handling code here:
         String ten = txttim.getText().trim();
-        try {
-            List<modelSanpham> tim = sanpham.searchSanPhamByName(ten);
-
-            String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm", "Giá(VND)", "Số lượng"};
-
-            DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-
-            for (modelSanpham sp : tim) {
-                model.addRow(new Object[]{
-                    sp.getSanPhamID(),
-                    sp.getTenSP(),
-                    sp.getgiaSP(),
-                    sp.getSoLuong(),});
-            }
-            jTable1.setModel(model);
-            lockTxt();
-        } catch (SQLException ex) {
-            Logger.getLogger(FrmSanpham.class.getName()).log(Level.SEVERE, null, ex);
+        List<modelSanpham> tim = sanpham.searchSanPhamByName(ten);
+        String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm", "Giá(VND)", "Số lượng"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        for (modelSanpham sp : tim) {
+            model.addRow(new Object[]{
+                sp.getSanPhamID(),
+                sp.getTenSP(),
+                sp.getgiaSP(),
+                sp.getSoLuong(),});
         }
+        jTable1.setModel(model);
+        lockTxt();
     }//GEN-LAST:event_btnTimkiemActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
         String tenSP = txttensp.getText();
-        int id = sanpham.getSanphamID(tenSP);
+        int id = sanpham.getSanPhamID(tenSP);
         System.out.print(id);
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Bạn có chắc chắn muốn xóa khách hàng này?",
@@ -525,21 +510,21 @@ public class FrmSanpham extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmBanhang frm=new FrmBanhang();
+        FrmBanhang frm=new FrmBanhang(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmKhachhang frm=new FrmKhachhang();
+        FrmKhachhang frm=new FrmKhachhang(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmDoanhThu frm=new FrmDoanhThu();
+        FrmDoanhThu frm=new FrmDoanhThu(id);
         frm.setVisible(true);
 
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -550,7 +535,7 @@ public class FrmSanpham extends javax.swing.JFrame {
                 "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (confirmed == JOptionPane.YES_OPTION) {
-            FrmDangnhap frm = new FrmDangnhap();
+            FrmDangnhap frm = new FrmDangnhap(id);
             frm.setVisible(true);
             this.dispose();
         }
@@ -587,7 +572,7 @@ public class FrmSanpham extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmSanpham().setVisible(true);
+                new FrmSanpham(id).setVisible(true);
             }
         });
     }
