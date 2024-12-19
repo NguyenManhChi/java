@@ -36,21 +36,21 @@ public class SanPhamController {
         }
         return list;
     }
-    
 
     // Lấy danh sách sản phẩm với chỉ những thông tin cần thiết cho bán hàng (ID, tên, giá)
     public List<Object[]> getAllSP() {
         List<Object[]> list = new ArrayList<>();
         try {
-            String sql = "SELECT sanphamID, tenSP, giaSP FROM sanpham";
+            String sql = "SELECT sanphamID, tenSP, giaSP, soluong FROM sanpham";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                Object[] sp = new Object[] {
+                Object[] sp = new Object[]{
                     rs.getInt("sanphamID"),
                     rs.getString("tenSP"),
-                    rs.getFloat("giaSP")
+                    rs.getFloat("giaSP"),
+                    rs.getInt("soluong")
                 };
                 list.add(sp);
             }
@@ -59,7 +59,7 @@ public class SanPhamController {
         }
         return list;
     }
-    
+
     // Thêm sản phẩm mới
     public boolean addSanPham(modelSanpham sp) {
         try {
@@ -155,4 +155,34 @@ public class SanPhamController {
         }
         return 0; // Nếu không tìm thấy sản phẩm
     }
+    // Phương thức để cập nhật số lượng sản phẩm sau khi bán
+
+    public void capNhatSoLuongSanPham(int khachHangID) {
+        // Truy vấn để lấy SanPhamID và SoLuong từ bảng Banhang cho một KhachHangID cụ thể
+        String selectQuery = "SELECT SanPhamID, SoLuong FROM Banhang WHERE KhachHangID = ?";
+        String updateQuery = "UPDATE sanpham SET soluong = soluong - ? WHERE sanphamID = ?";
+
+        try (PreparedStatement selectStmt = conn.prepareStatement(selectQuery)) {
+            selectStmt.setInt(1, khachHangID); // Gán KhachHangID
+            ResultSet rs = selectStmt.executeQuery();
+
+            // Chuẩn bị câu lệnh cập nhật
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+                while (rs.next()) {
+                    int sanPhamID = rs.getInt("SanPhamID");
+                    int soLuongBan = rs.getInt("SoLuong");
+
+                    // Gán giá trị vào câu lệnh cập nhật
+                    updateStmt.setInt(1, soLuongBan);
+                    updateStmt.setInt(2, sanPhamID);
+
+                    // Thực thi cập nhật
+                    updateStmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
