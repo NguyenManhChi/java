@@ -32,8 +32,9 @@ public class FrmSanpham extends javax.swing.JFrame {
         conn = new DbConnection().getConnection();
         sanpham = new SanPhamController(conn);
         this.id = _id;
-        lockTxt();
         loadSanpham();
+        lockTxt();
+        
     }
 
     private void lockTxt() {
@@ -63,8 +64,19 @@ public class FrmSanpham extends javax.swing.JFrame {
                 sp.getgiaSP(),
                 sp.getSoLuong(),});
         }
+        for (int i = model.getRowCount() - 1; i >= 0; i--) {
+            int soLuong = Integer.parseInt(model.getValueAt(i, 3).toString()); // Cột số lượng (index 3)
+            int sanPhamID = Integer.parseInt(model.getValueAt(i, 0).toString()); // Cột mã sản phẩm (index 0)
+
+            // Nếu số lượng bằng 0, xóa dòng và sản phẩm khỏi cơ sở dữ liệu
+            if (soLuong == 0) {
+                sanpham.deleteSanPham(sanPhamID); // Gọi hàm xóa sản phẩm từ cơ sở dữ liệu
+                model.removeRow(i); // Xóa dòng khỏi JTable
+            }
+        }
         jTable1.setModel(model);
         lockTxt();
+        
     }
 
     /**

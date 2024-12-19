@@ -10,6 +10,7 @@ import Controller.SanPhamController;
 import DBO.DbConnection;
 import Model.modelKhachhang;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -68,7 +69,7 @@ public class FrmThanhToan extends javax.swing.JFrame {
 
         // Tính tổng cột "Thành Tiền"
         double total = sumColumn(jTable1, 3);
-        jLabel9.setText( "Thành tiền: "+ String.valueOf(total) + " Đồng"); // Hiển thị tổng vào jLabel9
+        jLabel9.setText("Thành tiền: " + String.valueOf(total) + " Đồng"); // Hiển thị tổng vào jLabel9
     }
 
 // Phương thức để cộng giá trị trong một cột
@@ -251,18 +252,30 @@ public class FrmThanhToan extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Khách hàng đã thanh toán thành công.");
-        this.dispose();
-        FrmBanhang frm = new FrmBanhang(idKH);
-        frm.setVisible(true);
-        jLabel3.setText("");
-        jLabel5.setText("");
-        jLabel8.setText("");
-        jLabel9.setText("");
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0);
-        banhang.deleteBanhang(idKH);
-        
+        try {
+            sanpham.capNhatSoLuongSanPham(idKH);
+            JOptionPane.showMessageDialog(this, "Khách hàng đã thanh toán thành công.");
+
+            // Xóa dữ liệu trong bảng bán hàng cho khách hàng hiện tại
+            banhang.deleteBanhang(idKH);
+
+            // Làm sạch giao diện
+            jLabel3.setText(""); // Tên khách hàng
+            jLabel5.setText(""); // ID khách hàng
+            jLabel8.setText(""); // Thông tin bổ sung
+            jLabel9.setText(""); // Tổng tiền
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0); // Xóa tất cả dòng trong JTable
+
+            // Đóng form thanh toán và mở lại form bán hàng
+            this.dispose();
+            FrmBanhang frm = new FrmBanhang(idKH);
+            frm.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi thanh toán!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

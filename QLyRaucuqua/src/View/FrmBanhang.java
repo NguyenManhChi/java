@@ -48,14 +48,23 @@ public class FrmBanhang extends javax.swing.JFrame {
 
     private void loadSanpham() {
         List<Object[]> spList = sanpham.getAllSP();
-        String[] columnNames = {"ID", "Tên sản phẩm", "Giá (VND)"};
+        String[] columnNames = {"ID", "Tên sản phẩm", "Giá (VND)", "Số lượng trong kho"};
 
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 
         for (Object[] sp : spList) {
             model.addRow(sp);
         }
+        for (int i = model.getRowCount() - 1; i >= 0; i--) {
+            int soLuong = Integer.parseInt(model.getValueAt(i, 3).toString()); // Cột số lượng (index 3)
+            int sanPhamID = Integer.parseInt(model.getValueAt(i, 0).toString()); // Cột mã sản phẩm (index 0)
 
+            // Nếu số lượng bằng 0, xóa dòng và sản phẩm khỏi cơ sở dữ liệu
+            if (soLuong == 0) {
+                sanpham.deleteSanPham(sanPhamID); // Gọi hàm xóa sản phẩm từ cơ sở dữ liệu
+                model.removeRow(i); // Xóa dòng khỏi JTable
+            }
+        }
         jTable1.setModel(model);
         jTable1.setDefaultEditor(Object.class, null);
     }
@@ -68,7 +77,7 @@ public class FrmBanhang extends javax.swing.JFrame {
         for (Object[] sp : spList) {
             model.addRow(sp);
         }
-
+        
         jTable2.setModel(model);
         jTable2.setDefaultEditor(Object.class, null);
     }
