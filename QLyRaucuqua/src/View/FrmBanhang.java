@@ -65,6 +65,7 @@ public class FrmBanhang extends javax.swing.JFrame {
                 model.removeRow(i); // Xóa dòng khỏi JTable
             }
         }
+        
         jTable1.setModel(model);
         jTable1.setDefaultEditor(Object.class, null);
     }
@@ -498,7 +499,7 @@ public class FrmBanhang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm cần xóa!");
             return;
         }
-
+        
         // Lấy thông tin sản phẩm từ dòng đã chọn
         String tenSanPham = (String) jTable4.getValueAt(selectedRow, 0);  
         
@@ -525,11 +526,18 @@ public class FrmBanhang extends javax.swing.JFrame {
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
+        if (jTable4.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng gọi đồ trước khi thanh toán", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return; // Dừng xử lý nếu bảng rỗng
+        }
+
+
         this.dispose();
         int id = selectedKhachHangID;
         System.out.print(id);
         FrmThanhToan frm = new FrmThanhToan(id);
         frm.setVisible(true);
+
         
     }//GEN-LAST:event_jButton7ActionPerformed
 

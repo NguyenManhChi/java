@@ -4,11 +4,14 @@
  */
 package View;
 
+import Controller.AccountController;
 import Controller.BanHangcontroller;
+import Controller.DoanhThuController;
 import Controller.KhachHangController;
 import Controller.SanPhamController;
 import DBO.DbConnection;
 import Model.modelKhachhang;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -33,7 +36,7 @@ public class FrmThanhToan extends javax.swing.JFrame {
     private BanHangcontroller banhang;
     private static int idKH;
     private LocalDate currentDate;
-    private DateTimeFormatter formatter;
+    private DoanhThuController doanhthu;
 
     public FrmThanhToan(int _id) {
         initComponents();
@@ -42,8 +45,9 @@ public class FrmThanhToan extends javax.swing.JFrame {
         khachhang = new KhachHangController(conn);
         banhang = new BanHangcontroller(conn);
         currentDate = LocalDate.now();
+        doanhthu = new DoanhThuController(conn);
         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-
+       
         this.idKH = _id; // Gán _id cho idKH
         jLabel3.setText(String.valueOf(idKH));
         jLabel5.setText(khachhang.getTenKhachHang(_id));
@@ -68,13 +72,13 @@ public class FrmThanhToan extends javax.swing.JFrame {
         jTable1.setModel(model);
 
         // Tính tổng cột "Thành Tiền"
-        double total = sumColumn(jTable1, 3);
-        jLabel9.setText("Thành tiền: " + String.valueOf(total) + " Đồng"); // Hiển thị tổng vào jLabel9
+        float total = sumColumn(jTable1, 3);
+        jLabel9.setText("Thành tiền: " + String.valueOf(total) + " Đồng");// Hiển thị tổng vào jLabel9
     }
 
 // Phương thức để cộng giá trị trong một cột
-    public static double sumColumn(JTable table, int columnIndex) {
-        double sum = 0;
+    public static float sumColumn(JTable table, int columnIndex) {
+        float sum = 0;
 
         // Duyệt qua từng hàng trong JTable và cộng giá trị trong cột chỉ định
         for (int row = 0; row < table.getRowCount(); row++) {
@@ -230,10 +234,11 @@ public class FrmThanhToan extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jLabel9))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1)
+                        .addComponent(jButton2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -253,6 +258,13 @@ public class FrmThanhToan extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         try {
+            String ngaytao = jLabel8.getText();
+            float tongtien = sumColumn(jTable1, 3);
+            
+            boolean checkAdd = doanhthu.addHoaDon(idKH, ngaytao, tongtien);
+            if (checkAdd) {
+                System.out.print("Luu vao danh thu thanh cong");
+            }
             sanpham.capNhatSoLuongSanPham(idKH);
             JOptionPane.showMessageDialog(this, "Khách hàng đã thanh toán thành công.");
 
@@ -275,7 +287,7 @@ public class FrmThanhToan extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi thanh toán!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

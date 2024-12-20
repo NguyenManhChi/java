@@ -4,7 +4,16 @@
  */
 package View;
 
+import Controller.DoanhThuController;
+import Controller.KhachHangController;
+import DBO.DbConnection;
+import Model.modelDoanhthu;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -13,13 +22,48 @@ import javax.swing.JOptionPane;
 public class FrmDoanhThu extends javax.swing.JFrame {
 
     private static int id;
+    private DoanhThuController doanhthu;
+    private Connection conn;
+    private KhachHangController khachhang;
+
     /**
      * Creates new form FrmDoanhThu
      */
     public FrmDoanhThu(int _id) {
         initComponents();
+        conn = new DbConnection().getConnection();
+        doanhthu = new DoanhThuController(conn);
+        khachhang = new KhachHangController(conn);
         //
         this.id = _id;
+        loadData();
+        jLabel5.setText(String.valueOf(doanhthu.getTongSoHoaDon(conn)));
+        jLabel4.setText(String.valueOf(doanhthu.getTongTienHoaDon(conn)));
+    }
+
+    public void loadData() {
+        // Giả sử bạn đã có danh sách doanh thu
+        List<modelDoanhthu> doanhthuList = doanhthu.getAllDoanhThu();
+
+        // Tạo DefaultTableModel để cập nhật dữ liệu cho JTable
+        String[] columnNames = {"ID hóa đơn", "Tên Khách hàng", "Ngày tạo", "Thành Tiền"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0); // 0 dòng ban đầu
+
+        // Duyệt qua doanhthuList và thêm vào model
+        for (modelDoanhthu dt : doanhthuList) {
+            String tenKhachHang = khachhang.getTenKhachHang(dt.getKhachhangID());
+            // Tạo một mảng đối tượng với giá trị của mỗi cột
+
+            Object[] row = new Object[4];
+            row[0] = dt.getDoanhthuID();         // ID hóa đơn
+            row[1] = tenKhachHang;             // Tên khách hàng từ ID
+            row[2] = dt.getNgayThanhToan();          // Ngày tạo
+            row[3] = dt.getTongTien();        // Thành tiền
+            // Thêm dữ liệu vào model
+            model.addRow(row);
+        }
+        // Cập nhật JTable với model mới
+        jTable1.setModel(model);
     }
 
     /**
@@ -92,10 +136,7 @@ public class FrmDoanhThu extends javax.swing.JFrame {
                 .addGap(64, 64, 64)
                 .addComponent(btnDangxuat)
                 .addContainerGap(70, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -115,6 +156,7 @@ public class FrmDoanhThu extends javax.swing.JFrame {
 
         jLabel1.setText("Số Đơn");
 
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("jLabel4");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -124,11 +166,11 @@ public class FrmDoanhThu extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(102, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(65, Short.MAX_VALUE)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -142,6 +184,7 @@ public class FrmDoanhThu extends javax.swing.JFrame {
 
         jLabel3.setText("Tổng Tiền");
 
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("jLabel4");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -149,20 +192,18 @@ public class FrmDoanhThu extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(57, Short.MAX_VALUE)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50))
+                .addContainerGap(21, Short.MAX_VALUE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(12, 12, 12)
                 .addComponent(jLabel4)
                 .addContainerGap(22, Short.MAX_VALUE))
         );
@@ -178,11 +219,21 @@ public class FrmDoanhThu extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jButton5.setText("Tìm Kiếm");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
-        jLabel6.setText("Nhập mã:");
+        jLabel6.setText("Tìm theo ID Hóa đơn:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -192,11 +243,11 @@ public class FrmDoanhThu extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(54, 54, 54)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 423, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(14, 14, 14))
@@ -213,11 +264,11 @@ public class FrmDoanhThu extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(8, 8, 8)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -236,28 +287,28 @@ public class FrmDoanhThu extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmDoanhThu frm=new FrmDoanhThu(id);
+        FrmDoanhThu frm = new FrmDoanhThu(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmBanhang frm=new FrmBanhang(id);
+        FrmBanhang frm = new FrmBanhang(id);
         frm.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        FrmKhachhang frm=new FrmKhachhang(id);
+        FrmKhachhang frm = new FrmKhachhang(id);
         frm.setVisible(true);
-        
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btnDangxuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangxuatActionPerformed
         // TODO add your handling code here:
-         int confirmed = JOptionPane.showConfirmDialog(this,
+        int confirmed = JOptionPane.showConfirmDialog(this,
                 "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (confirmed == JOptionPane.YES_OPTION) {
@@ -267,6 +318,50 @@ public class FrmDoanhThu extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_btnDangxuatActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        int ma = Integer.parseInt(jTextField1.getText().trim()); // Lấy từ khóa tìm kiếm
+
+        // Tìm kiếm doanh thu dựa trên ID hóa đơn
+        List<modelDoanhthu> timKiemList = doanhthu.searchDoanhthuByHoaDonID(ma);
+
+        // Tạo bảng với các tên cột
+        String[] columnNames = {"ID hóa đơn", "Tên Khách hàng", "Ngày tạo", "Thành Tiền"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+        // Sử dụng một Map để lưu trữ tên khách hàng tránh truy vấn lại nhiều lần
+        Map<Integer, String> tenKhachHangMap = new HashMap<>();
+
+        // Duyệt qua danh sách kết quả tìm kiếm và thêm vào model
+        for (modelDoanhthu dt : timKiemList) {
+            // Kiểm tra xem tên khách hàng đã có trong map chưa
+            String tenKhachHang = tenKhachHangMap.get(dt.getKhachhangID());
+
+            // Nếu chưa có, lấy tên khách hàng và lưu vào map
+            if (tenKhachHang == null) {
+                tenKhachHang = khachhang.getTenKhachHang(dt.getKhachhangID());
+                tenKhachHangMap.put(dt.getKhachhangID(), tenKhachHang);
+            }
+
+            // Tạo một mảng đối tượng với giá trị của mỗi cột
+            Object[] row = new Object[4];
+            row[0] = dt.getDoanhthuID();          // ID hóa đơn
+            row[1] = tenKhachHang;                // Tên khách hàng
+            row[2] = dt.getNgayThanhToan();       // Ngày thanh toán
+            row[3] = dt.getTongTien();            // Thành tiền
+
+            // Thêm dữ liệu vào model
+            model.addRow(row);
+        }
+
+        // Cập nhật JTable với model mới
+        jTable1.setModel(model);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        jTable1.setDefaultEditor(Object.class, null);
+    }//GEN-LAST:event_jTable1MouseClicked
 
     /**
      * @param args the command line arguments

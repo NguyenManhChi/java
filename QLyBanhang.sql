@@ -22,10 +22,9 @@ Create table sanpham(
 );
 CREATE TABLE HoaDon (
     HoaDonID INT PRIMARY KEY IDENTITY(1,1),
-    UserID INT FOREIGN KEY REFERENCES Acccount(UserID), 
 	KhachHangID INT FOREIGN KEY REFERENCES KhachHang(KhachHangID),
     NgayTao DATE DEFAULT GETDATE(),
-    TongTien DECIMAL(12,2) DEFAULT 0
+    TongTien FLOAT
 );
 
 CREATE TABLE Banhang (
@@ -35,12 +34,6 @@ CREATE TABLE Banhang (
     SoLuong INT NOT NULL,
     DonGia DECIMAL(10, 2) NOT NULL,
     ThanhTien AS (SoLuong * DonGia)          
-);
-CREATE TABLE DoanhThu ( 
-	DoanhThuID INT PRIMARY KEY IDENTITY(1,1), 
-	HoaDonID INT FOREIGN KEY REFERENCES HoaDon(HoaDonID), 
-	TongTien DECIMAL(18,2), 
-	NgayThu DATE 
 );
 
 CREATE TRIGGER UpdateBanhangOnSanphamChange
@@ -58,3 +51,8 @@ BEGIN
         INNER JOIN inserted sp ON bh.SanPhamID = sp.sanphamID;
     END
 END
+
+Select * from hoadon
+
+
+
