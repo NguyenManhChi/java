@@ -447,6 +447,10 @@ public class FrmKhachhang extends javax.swing.JFrame {
 
     private void btnKLuuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKLuuActionPerformed
         // TODO add your handling code here:
+        txtID.setText("");
+        txtTen.setText("");
+        txtSDT.setText("");
+        txtDC.setText("");
         lockTxt();
     }//GEN-LAST:event_btnKLuuActionPerformed
 
